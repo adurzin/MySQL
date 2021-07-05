@@ -1,0 +1,26 @@
+1.
+	UPDATE `users` SET
+	 created_at = NOW(),
+	 updated_at = NOW()
+	 WHERE id > 0;
+
+	SELECT * FROM shop.users;
+	
+2. 
+	ALTER TABLE `users`
+		ADD created_at_2 DATETIME,
+		ADD updated_at_2 DATETIME;
+	UPDATE `users` SET
+		created_at_2 = STR_TO_DATE(created_at, '%d.%m.%Y %h:%i'),
+		updated_at_2 = STR_TO_DATE(updated_at, '%d.%m.%Y %h:%i')
+		WHERE id < 8;
+	ALTER TABLE `users`
+		DROP created_at,
+		DROP updated_at,
+		RENAME COLUMN created_at_2 TO created_at,
+		RENAME COLUMN updated_at_2 TO updated_at;    
+	 
+	SELECT * FROM shop.users;
+	
+3.
+	
