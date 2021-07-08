@@ -26,3 +26,9 @@
 		FROM `profile`
 		ORDER BY birhday DESC
 		LIMIT 10) t
+		
+4.
+	SELECT
+		IF (COUNT(*) / (SELECT COUNT(*) FROM `like`) * 100 > 50, 'man', 'woman') as answer
+	 FROM `like`
+	 WHERE user_id IN (SELECT user_id FROM `profile` WHERE `gender` = 'm')
