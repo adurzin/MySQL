@@ -32,3 +32,17 @@
 		IF (COUNT(*) / (SELECT COUNT(*) FROM `like`) * 100 > 50, 'man', 'woman') as answer
 	 FROM `like`
 	 WHERE user_id IN (SELECT user_id FROM `profile` WHERE `gender` = 'm')
+	 
+5.
+	SELECT
+		CONCAT(firstname, ' ', lastname),
+		(SELECT COUNT(*) FROM friend_request
+		WHERE (from_user_id = user_id OR to_user_id = user_id)
+		AND `status` IN (1, -1)) +
+		(SELECT COUNT(*) FROM message
+		WHERE (from_user_id = user_id OR to_user_id = user_id)) +
+		(SELECT COUNT(*) FROM `like` WHERE `like`.user_id = `profile`.user_id) +
+		(SELECT COUNT(*) FROM `post` WHERE `post`.user_id = `profile`.user_id) AS cnt
+	FROM `profile`
+	ORDER BY cnt
+	LIMIT 10
