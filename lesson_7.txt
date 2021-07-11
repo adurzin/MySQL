@@ -1,0 +1,18 @@
+
+1.  --------------------------
+
+
+2.
+	SELECT
+		products.id,
+ 		products.name,
+	 	catalogs.name
+ 	FROM 
+		catalogs
+	JOIN
+		products
+ 	WHERE 
+		catalog_id = catalogs.id;
+	
+3. 
+	
