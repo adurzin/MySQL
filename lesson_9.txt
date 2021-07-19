@@ -1,0 +1,108 @@
+Практическое задание по теме “Транзакции, переменные, представления”
+
+1.  
+	START TRANSACTION;
+	INSERT INTO sample.users (SELECT * FROM shop.users WHERE shop.users.id = 1);
+	COMMIT;
+
+2.
+	CREATE OR REPLACE VIEW pr AS 
+	SELECT
+		p.name,
+    	c.name as catalog_name
+	FROM shop.products p
+	LEFT JOIN shop.catalogs c ON p.catalog_id = c.id;
+	SELECT * FROM pr;
+
+
+Практическое задание по теме “Администрирование MySQL” (эта тема изучается по вашему желанию)
+
+1.
+	mysql> CREATE USER shop_read;
+	Query OK, 0 rows affected (0.01 sec)
+
+	mysql> CREATE USER shop;
+	Query OK, 0 rows affected (0.02 sec)
+
+	mysql> SELECT Host, User FROM mysql.user;
+	+-----------+------------------+
+	| Host      | User             |
+	+-----------+------------------+
+	| %         | shop             |
+	| %         | shop_read        |
+	| localhost | mysql.infoschema |
+	| localhost | mysql.session    |
+	| localhost | mysql.sys        |
+	| localhost | root             |
+	+-----------+------------------+
+	6 rows in set (0.00 sec)
+	mysql> GRANT SELECT ON shop.* TO shop_read;
+	Query OK, 0 rows affected (0.03 sec)
+
+	mysql> GRANT ALL ON shop.* TO shop;
+	Query OK, 0 rows affected (0.01 sec)
+	
+	mysql> SHOW GRANTS \G
+	*************************** 1. row ***************************
+	Grants for shop@%: GRANT USAGE ON *.* TO `shop`@`%`
+	*************************** 2. row ***************************
+	Grants for shop@%: GRANT ALL PRIVILEGES ON `shop`.* TO `shop`@`%`
+	2 rows in set (0.00 sec)
+
+	mysql> SHOW GRANTS;
+	+---------------------------------------------+
+	| Grants for shop_read@%                      |
+	+---------------------------------------------+
+	| GRANT USAGE ON *.* TO `shop_read`@`%`       |
+	| GRANT SELECT ON `shop`.* TO `shop_read`@`%` |
+	+---------------------------------------------+
+	2 rows in set (0.00 sec)
+
+
+Практическое задание по теме “Хранимые процедуры и функции, триггеры"
+
+1.
+	DROP FUNCTION IF EXISTS hello;
+
+	DELIMITER //
+
+	CREATE FUNCTION hello()
+	RETURNS TEXT DETERMINISTIC
+	BEGIN
+		SET @t = HOUR(CURRENT_TIME());
+		IF 6 <= @t AND @t < 12 THEN
+			RETURN 'Доброе утро';
+		ELSEIF @t >= 12 AND @t < 18 THEN
+			RETURN 'Добрый день';
+		ELSEIF @t >= 18 AND @t < 0 THEN
+			RETURN 'Добрый вечер';
+		ELSE
+			RETURN 'Доброй ночи';
+		END IF;
+	END;
+
+2.
+	DROP TRIGGER IF EXISTS check_products_1;
+	DROP TRIGGER IF EXISTS check_products_2;
+
+	DELIMITER //
+
+	CREATE TRIGGER check_products_1 BEFORE INSERT ON products
+	FOR EACH ROW
+	BEGIN
+		IF NEW.name IS NULL THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Incorrect name! Try again.';
+		ELSEIF NEW.description IS NULL THEN
+			SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = 'incorrect description! Try again.';
+		END IF;
+	END//
+
+	CREATE TRIGGER check_products_2 BEFORE UPDATE ON products
+	FOR EACH ROW
+	BEGIN
+		IF NEW.name IS NULL THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Incorrect name! Try again.';
+		ELSEIF NEW.description IS NULL THEN
+			SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = 'incorrect description! Try again.';
+		END IF;
+	END//
