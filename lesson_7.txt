@@ -1,0 +1,29 @@
+
+1.  
+	SELECT
+		*
+	FROM
+		shop.users
+	WHERE 
+		id IN (SELECT user_id FROM shop.orders);
+
+
+2.
+	SELECT
+		products.id,
+ 		products.name,
+	 	catalogs.name
+ 	FROM 
+		catalogs
+	JOIN
+		products
+ 	WHERE 
+		catalog_id = catalogs.id;
+	
+3. 
+	SELECT
+		id,
+    		(SELECT `name` FROM cities WHERE flights.`from` = `label`),
+    		(SELECT `name` FROM cities WHERE flights.`to` = `label`)
+	FROM 
+		flights
