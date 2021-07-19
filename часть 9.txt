@@ -1,0 +1,47 @@
+Практическое задание по теме “Хранимые процедуры и функции, триггеры"
+
+1.
+	DROP FUNCTION IF EXISTS hello;
+
+	DELIMITER //
+
+	CREATE FUNCTION hello()
+	RETURNS TEXT DETERMINISTIC
+	BEGIN
+		SET @t = HOUR(CURRENT_TIME());
+		IF 6 <= @t AND @t < 12 THEN
+			RETURN 'Доброе утро';
+		ELSEIF @t >= 12 AND @t < 18 THEN
+			RETURN 'Добрый день';
+		ELSEIF @t >= 18 AND @t < 0 THEN
+			RETURN 'Добрый вечер';
+		ELSE
+			RETURN 'Доброй ночи';
+		END IF;
+	END;
+
+2.
+	DROP TRIGGER IF EXISTS check_products_1;
+	DROP TRIGGER IF EXISTS check_products_2;
+
+	DELIMITER //
+
+	CREATE TRIGGER check_products_1 BEFORE INSERT ON products
+	FOR EACH ROW
+	BEGIN
+		IF NEW.name IS NULL THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Incorrect name! Try again.';
+		ELSEIF NEW.description IS NULL THEN
+			SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = 'incorrect description! Try again.';
+		END IF;
+	END//
+
+	CREATE TRIGGER check_products_2 BEFORE UPDATE ON products
+	FOR EACH ROW
+	BEGIN
+		IF NEW.name IS NULL THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Incorrect name! Try again.';
+		ELSEIF NEW.description IS NULL THEN
+			SIGNAL SQLSTATE '45001' SET MESSAGE_TEXT = 'incorrect description! Try again.';
+		END IF;
+	END//
