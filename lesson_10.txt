@@ -1,0 +1,40 @@
+1.
+	CREATE TABLE `shop`.`logs` (
+	  `created_at` DATETIME NOT NULL,
+	  `table` VARCHAR(45) NOT NULL,
+	  `name` VARCHAR(45) NOT NULL,
+	  `id_row` INT UNSIGNED NOT NULL)
+	ENGINE = ARCHIVE;
+	
+	DROP TRIGGER IF EXISTS `shop`.`logs_AFTER_INSERT`;
+
+	DELIMITER $$
+	USE `shop`$$
+	CREATE DEFINER = CURRENT_USER TRIGGER `shop`.`logs_AFTER_INSERT` AFTER INSERT ON `users` FOR EACH ROW
+	BEGIN
+		INSERT INTO `shop`.`logs` VALUES (NOW(), 'users',  NEW.name, NEW.id);
+	END$$
+	DELIMITER ;
+	
+	DROP TRIGGER IF EXISTS `shop`.`logs_AFTER_INSERT`;
+
+	DELIMITER $$
+	USE `shop`$$
+	CREATE DEFINER = CURRENT_USER TRIGGER `shop`.`logs_AFTER_INSERT` AFTER INSERT ON `products` FOR EACH ROW
+	BEGIN
+		INSERT INTO `logs` VALUES (NOW(), 'products', NEW.name, NEW.id);
+	END$$
+	DELIMITER ;
+	
+	DROP TRIGGER IF EXISTS `shop`.`logs_AFTER_INSERT`;
+
+	DELIMITER $$
+	USE `shop`$$
+	CREATE DEFINER = CURRENT_USER TRIGGER `shop`.`logs_AFTER_INSERT` AFTER INSERT ON `catalogs` FOR EACH ROW
+	BEGIN
+		INSERT INTO `logs` VALUES (NOW(), 'catalogs', NEW.name, NEW.id);
+	END$$
+	DELIMITER ;
+	
+2.
+	
